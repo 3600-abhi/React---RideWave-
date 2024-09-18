@@ -1,13 +1,14 @@
-import { TextField, Button, Backdrop, CircularProgress } from '@mui/material';
+import { TextField, Button } from '@mui/material';
 import Card from '@mui/material/Card';
 import { useState } from 'react';
-import { Loader } from "../component";
+import { Loader } from ".";
 import { AuthApi } from "../apis";
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateUserInfo } from "../store/slice/user-slice";
+import { Enums } from "../utils";
 
-function Signin() {
+function DriverSignIn() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -19,11 +20,11 @@ function Signin() {
     const handleSignIn = async () => {
         try {
             setLoading(true);
-            const response = await AuthApi.signIn(email, password);
+            const response = await AuthApi.driverSignIn({ email, password });
 
             if (response.status === 200) {
                 dispatch(updateUserInfo(response.data));
-                navigate("/booking");
+                navigate(Enums.ROUTES.DRIVER_HOME);
             }
         } catch (error) {
             console.log(error);
@@ -37,7 +38,7 @@ function Signin() {
             <Card className="p-10 bg-red-600">
                 <div className="flex flex-col justify-center items-center content-between space-y-4 h-full">
 
-                    <h1 className="font-semibold text-4xl p-10">Login for Passenger</h1>
+                    <h1 className="font-semibold text-4xl p-10">Login for Driver</h1>
 
 
                     <TextField
@@ -74,4 +75,4 @@ function Signin() {
     );
 }
 
-export default Signin;
+export default DriverSignIn;

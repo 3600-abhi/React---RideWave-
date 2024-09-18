@@ -1,19 +1,29 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Signin, Booking } from "./component";
+import { Header, PassengerHome, PassengerSignIn, DriverSignIn, DriverHome } from "./component";
 import { Provider } from "react-redux";
-import { Outlet, RouterProvider } from "react-router-dom";
-import appRouter from "./routes/app-routes";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import store from "./store/store";
+import { Enums } from "./utils";
 
 
 export default function App() {
+
+    const { ROUTES } = Enums;
+
     return (
-        <>
-            <Provider store={store}>
-                <RouterProvider router={appRouter} />
-            </Provider>
-        </>
+        <Provider store={store}>
+            <BrowserRouter>
+                <Header />
+                <Routes>
+                    <Route path={ROUTES.HOME} element={<PassengerSignIn />} />
+                    <Route path={ROUTES.DRIVER_SIGNIN} element={<DriverSignIn />} />
+                    <Route path={ROUTES.PASSENGER_HOME} element={<PassengerHome />} />
+                    <Route path={ROUTES.DRIVER_HOME} element={<DriverHome />} />
+
+                </Routes>
+            </BrowserRouter>
+        </Provider>
     );
 }
 
