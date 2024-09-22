@@ -9,7 +9,9 @@ const ROUTES = {
     PASSENGER_HOME: "/passengerHome",
     DRIVER_HOME: "/driverHome",
     DRIVER_SIGNIN: "/driverSignIn",
-    PASSENGER_HOME: "/passengerHome"
+    PASSENGER_HOME: "/passengerHome",
+    PASSENGER_SIGNIN: "/passengerSignIn",
+    ABOUT: "/about"
 };
 
 

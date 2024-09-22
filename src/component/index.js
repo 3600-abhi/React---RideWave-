@@ -4,6 +4,7 @@ import Loader from "./Loader";
 import Header from "./Header";
 import DriverSignIn from "./DriverSignIn";
 import DriverHome from "./DriverHome";
+import About from "./About";
 
 export {
     PassengerSignIn,
@@ -11,5 +12,6 @@ export {
     Loader,
     Header,
     DriverSignIn,
-    DriverHome
+    DriverHome,
+    About
 };

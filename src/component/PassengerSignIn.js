@@ -21,7 +21,7 @@ function PassengerSignIn() {
         try {
 
             setLoading(true);
-            const response = await AuthApi.PassengerSignIn({ email, password });
+            const response = await AuthApi.passengerSignIn({ email, password });
 
             if (response.status === 200) {
                 dispatch(updateUserInfo(response.data));
