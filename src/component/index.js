@@ -5,6 +5,7 @@ import Header from "./Header";
 import DriverSignIn from "./DriverSignIn";
 import DriverHome from "./DriverHome";
 import About from "./About";
+import PassengerDriverMap from "./PassengerDriverMap";
 
 export {
     PassengerSignIn,
@@ -13,5 +14,6 @@ export {
     Header,
     DriverSignIn,
     DriverHome,
-    About
+    About,
+    PassengerDriverMap
 };

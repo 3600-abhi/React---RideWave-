@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import SockJS from "sockjs-client";
 import Stomp from "stompjs";
 import { LocationApi } from "../apis";
+import { PassengerDriverMap } from "../component";
 
 
 function PassengerHome() {
@@ -173,7 +174,7 @@ function PassengerHome() {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="From"
+                                label="From Location"
                                 onChange={(event) => {
                                     setFromLocation({
                                         ...fromLocation,
@@ -205,7 +206,7 @@ function PassengerHome() {
                         renderInput={(params) => (
                             <TextField
                                 {...params}
-                                label="To"
+                                label="To Location"
                                 onChange={(event) => {
                                     setToLocation({
                                         ...toLocation,
@@ -221,8 +222,8 @@ function PassengerHome() {
 
                 </div>
 
-                <div>
-                    Hi
+                <div className="w-full">
+                    <PassengerDriverMap />
                 </div>
 
             </div>
