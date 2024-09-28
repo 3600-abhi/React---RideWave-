@@ -1,19 +1,22 @@
-import { useSelector } from "react-redux";
-import { Autocomplete, TextField } from "@mui/material";
+import { StatusCodes } from "http-status-codes";
+import { useDispatch, useSelector } from "react-redux";
+import { Autocomplete, TextField, Button } from "@mui/material";
 import { useState, useEffect } from "react";
-import SockJS from "sockjs-client";
-import Stomp from "stompjs";
-import { LocationApi } from "../apis";
-import { PassengerDriverMap } from "../component";
+import { LocationApi, BookingApi } from "../apis";
+import { BookingIntiatedAlert, PassengerDriverMap } from "../component";
+import { Enums } from "../utils";
+import { updateUserInfo } from "../store/slice/user-slice";
+import { updateBookingInfo } from "../store/slice/booking-slice";
+
+
 
 
 function PassengerHome() {
 
+    const dispatch = useDispatch();
     const userInfo = useSelector(store => store.user.userInfo);
-
+    const bookingInfo = useSelector(store => store.booking.bookingInfo);
     const [stompClient, setStompClient] = useState(null);
-
-    const [invokeLocAutoSuggApi, setInvokeLocAutoSuggApi] = useState(true);
 
     const [fromLocation, setFromLocation] = useState({
         location: "",
@@ -36,6 +39,11 @@ function PassengerHome() {
 
     const [suggestedFromLocationList, setSuggestedFromLocationList] = useState([]);
     const [suggestedToLocationList, setSuggestedToLocationList] = useState([]);
+
+    useEffect(() => {
+        const passengerData = JSON.parse(localStorage.getItem(Enums.USER_TYPE.PASSENGER));
+        dispatch(updateUserInfo(passengerData));
+    }, []);
 
 
 
@@ -63,38 +71,6 @@ function PassengerHome() {
 
 
 
-    // for managing websocket
-    // useEffect(() => {
-
-    //     const socket = new SockJS("http://localhost:8080/ws");
-    //     const stomp = Stomp.over(socket);
-
-    //     stomp.connect({}, () => {
-    //         console.log("Connected to the WebSocket server");
-
-    //         stomp.subscribe("/topic/ping", (message) => {
-    //             console.log("Received message from server", message);
-    //             setMessages((prevMessages) => [...prevMessages, message.body]);
-    //         });
-    //     });
-
-    //     setStompClient(stomp);
-
-    //     return () => {
-    //         if (stompClient) stompClient.disconnect();
-    //     };
-
-    // }, []);
-
-
-    // const handleSubmit = () => {
-    //     console.log("inside handleSubmit");
-    //     if (stompClient && inputValue) {
-    //         stompClient.send("/app/ping", {}, JSON.stringify({ data: inputValue }));
-    //         setInputValue("");
-    //     }
-    // };
-
 
     useEffect(() => {
 
@@ -103,8 +79,6 @@ function PassengerHome() {
         let timer;
 
         timer = setTimeout(() => {
-            console.log("fromLocation.location = ", fromLocation.location);
-
             LocationApi.getLocationSuggestion({
                 location: fromLocation.location,
                 latitude: passengerCoord.latitude,
@@ -126,8 +100,6 @@ function PassengerHome() {
         let timer;
 
         timer = setTimeout(() => {
-            console.log("toLocation.location = ", toLocation.location);
-
             LocationApi.getLocationSuggestion({
                 location: toLocation.location,
                 latitude: passengerCoord.latitude,
@@ -141,13 +113,38 @@ function PassengerHome() {
     }, [toLocation]);
 
 
+    const handleClickRideBooking = async () => {
+        try {
+
+            const bookingResponse = await BookingApi.createBooking({
+                passengerId: userInfo.userId,
+                fromLocation: fromLocation,
+                toLocation: toLocation
+            });
+
+            if (bookingResponse.status === StatusCodes.CREATED) {
+                console.log("inside booking if");
+                dispatch(updateBookingInfo({
+                    ...bookingInfo,
+                    showBookingInitiatedAlert: true
+                }));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
 
 
 
     return (
         <div>
 
-            <h1 className="font-bold text-2xl m-5">Booking</h1>
+            {bookingInfo.showBookingInitiatedAlert && (<BookingIntiatedAlert />)}
+
+
+            <h1 className="font-bold text-2xl m-5">Book Ride</h1>
 
             <div className="flex m-5">
 
@@ -160,9 +157,6 @@ function PassengerHome() {
                         options={suggestedFromLocationList}
                         getOptionLabel={option => option.address}
                         onChange={(event, newVal) => {
-
-                            setInvokeLocAutoSuggApi(false);
-
                             setFromLocation({
                                 location: newVal.address,
                                 latitude: newVal.latitude,
@@ -217,6 +211,13 @@ function PassengerHome() {
                             />
                         )}
                     />
+
+                    <Button
+                        className="ml-10"
+                        variant="contained"
+                        onClick={handleClickRideBooking}>
+                        Book Ride
+                    </Button>
 
 
 

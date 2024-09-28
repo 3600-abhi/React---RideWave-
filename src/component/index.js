@@ -6,6 +6,7 @@ import DriverSignIn from "./DriverSignIn";
 import DriverHome from "./DriverHome";
 import About from "./About";
 import PassengerDriverMap from "./PassengerDriverMap";
+import BookingIntiatedAlert from "./BookingIntiatedAlert";
 
 export {
     PassengerSignIn,
@@ -15,5 +16,6 @@ export {
     DriverSignIn,
     DriverHome,
     About,
-    PassengerDriverMap
+    PassengerDriverMap,
+    BookingIntiatedAlert
 };

@@ -1,3 +1,4 @@
+import { StatusCodes } from "http-status-codes";
 import { TextField, Button } from '@mui/material';
 import Card from '@mui/material/Card';
 import { useState } from 'react';
@@ -23,7 +24,8 @@ function PassengerSignIn() {
             setLoading(true);
             const response = await AuthApi.passengerSignIn({ email, password });
 
-            if (response.status === 200) {
+            if (response.status === StatusCodes.OK) {
+                localStorage.setItem(Enums.USER_TYPE.PASSENGER, JSON.stringify(response.data));
                 dispatch(updateUserInfo(response.data));
                 navigate(Enums.ROUTES.PASSENGER_HOME);
             }

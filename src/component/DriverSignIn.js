@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { updateUserInfo } from "../store/slice/user-slice";
 import { Enums } from "../utils";
+import { StatusCodes } from "http-status-codes";
 
 function DriverSignIn() {
 
@@ -22,7 +23,8 @@ function DriverSignIn() {
             setLoading(true);
             const response = await AuthApi.driverSignIn({ email, password });
 
-            if (response.status === 200) {
+            if (response.status === StatusCodes.OK) {
+                localStorage.setItem(Enums.USER_TYPE.DRIVER, JSON.stringify(response.data));
                 dispatch(updateUserInfo(response.data));
                 navigate(Enums.ROUTES.DRIVER_HOME);
             }

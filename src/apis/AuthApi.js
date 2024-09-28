@@ -10,7 +10,11 @@ async function passengerSignIn(data) {
             password: data.password
         };
 
+        console.log("passengerSignInRequest ::: ", body);
+
         const response = await axios.post(ServerConfig.AUTH_SERVICE_URI + "/api/v1/auth/passengerSignIn", body);
+
+        console.log("passengerSignInResponse ::: ", response.data);
 
         return response;
     } catch (error) {
