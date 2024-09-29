@@ -24,6 +24,9 @@ function DriverSignIn() {
             const response = await AuthApi.driverSignIn({ email, password });
 
             if (response.status === StatusCodes.OK) {
+                console.log(typeof response.data);
+                console.log("driverId :: ", response.data.userId);
+                console.log("driverName :: ", response.data.name);
                 localStorage.setItem(Enums.USER_TYPE.DRIVER, JSON.stringify(response.data));
                 dispatch(updateUserInfo(response.data));
                 navigate(Enums.ROUTES.DRIVER_HOME);

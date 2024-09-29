@@ -33,6 +33,9 @@ async function driverSignIn(data) {
 
         const response = await axios.post(ServerConfig.AUTH_SERVICE_URI + "/api/v1/auth/driverSignIn", body);
 
+        console.log(typeof response.data);
+        console.log("driverSignInResponse :: ", response.data);
+
         return response;
     } catch (error) {
         throw error;

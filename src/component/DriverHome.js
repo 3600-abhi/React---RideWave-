@@ -11,6 +11,10 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { updateUserInfo } from "../store/slice/user-slice";
 import { Enums } from "../utils";
+import { BookingApi } from "../apis";
+import { Loader } from "../component";
+import { ServerConfig } from "../config";
+import { updateBookingInfo } from "../store/slice/booking-slice";
 
 
 
@@ -22,10 +26,14 @@ const Transition = forwardRef(function Transition(props, ref) {
 function DriverHome() {
 
     const userInfo = useSelector(store => store.user.userInfo);
+    const bookingInfo = useSelector(store => store.booking.bookingInfo);
+
     const dispatch = useDispatch();
+
     const [stompClient, setStompClient] = useState(null);
     const [rideInfo, setRideInfo] = useState({});
     const [open, setOpen] = useState(false);
+    const [showLoader, setShowLoader] = useState(false);
 
 
     useEffect(() => {
@@ -37,7 +45,7 @@ function DriverHome() {
 
     useEffect(() => {
 
-        const socket = new SockJS("http://localhost:8080/ws");
+        const socket = new SockJS(ServerConfig.SOCKET_SERVICE_URI);
         const stomp = Stomp.over(socket);
 
         stomp.connect({}, () => {
@@ -46,8 +54,11 @@ function DriverHome() {
             const driverData = JSON.parse(localStorage.getItem(Enums.USER_TYPE.DRIVER));
 
             stomp.subscribe(`/topic/rideRequest/${driverData.userId}`, (rideRequest) => {
-                console.log("Received message from server", rideRequest);
-                setRideInfo(rideRequest);
+
+                console.log("rideRequestFromSocket ::: ", rideRequest.body);
+
+                dispatch(updateBookingInfo(rideRequest.body));
+
                 setOpen(true);
             });
         });
@@ -61,10 +72,30 @@ function DriverHome() {
     }, []);
 
 
+    const handleAcceptBooking = () => {
+
+        setOpen(false);
+
+        const bookingInfoJson = JSON.parse(bookingInfo);
+
+        const obj = {
+            passengerId: bookingInfoJson.passengerId,
+            driverId: bookingInfoJson.driverId,
+            bookingId: bookingInfoJson.bookingId
+        };
+
+        console.log("obj :: ", obj);
+
+        stompClient.send("/app/rideResponse", {}, JSON.stringify(obj));
+    };
+
 
 
     return (
         <div>
+
+            {showLoader && (<Loader />)}
+
             <h1>Welcome to Driver Home Page</h1>
 
             <Dialog
@@ -84,7 +115,7 @@ function DriverHome() {
 
                 <DialogActions>
                     <Button onClick={() => setOpen(false)}>Deny</Button>
-                    <Button onClick={() => setOpen(false)}>Accept</Button>
+                    <Button onClick={handleAcceptBooking}>Accept</Button>
                 </DialogActions>
             </Dialog>
 

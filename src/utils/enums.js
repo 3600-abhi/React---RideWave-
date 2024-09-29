@@ -14,8 +14,18 @@ const ROUTES = {
     ABOUT: "/about"
 };
 
+const BOOKING_STATUS = {
+    SCHEDULED: "SCHEDULED",
+    CANCELLED: "CANCELLED",
+    CAB_ARRIVED: "CAB_ARRIVED",
+    ASSIGNING_DRIVER: "ASSIGNING_DRIVER",
+    IN_RIDE: "IN_RIDE",
+    COMPLETED: "COMPLETED"
+};
+
 
 export default {
     USER_TYPE,
-    ROUTES
+    ROUTES,
+    BOOKING_STATUS
 };

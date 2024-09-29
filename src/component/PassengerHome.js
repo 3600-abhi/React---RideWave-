@@ -3,10 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { Autocomplete, TextField, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { LocationApi, BookingApi } from "../apis";
-import { BookingIntiatedAlert, PassengerDriverMap } from "../component";
+import { BookingAcceptanceAlert, BookingIntiatedAlert, PassengerDriverMap } from "../component";
 import { Enums } from "../utils";
 import { updateUserInfo } from "../store/slice/user-slice";
 import { updateBookingInfo } from "../store/slice/booking-slice";
+import SockJS from "sockjs-client";
+import Stomp from "stompjs";
+import { ServerConfig } from "../config";
 
 
 
@@ -17,6 +20,7 @@ function PassengerHome() {
     const userInfo = useSelector(store => store.user.userInfo);
     const bookingInfo = useSelector(store => store.booking.bookingInfo);
     const [stompClient, setStompClient] = useState(null);
+
 
     const [fromLocation, setFromLocation] = useState({
         location: "",
@@ -39,6 +43,7 @@ function PassengerHome() {
 
     const [suggestedFromLocationList, setSuggestedFromLocationList] = useState([]);
     const [suggestedToLocationList, setSuggestedToLocationList] = useState([]);
+
 
     useEffect(() => {
         const passengerData = JSON.parse(localStorage.getItem(Enums.USER_TYPE.PASSENGER));
@@ -123,7 +128,6 @@ function PassengerHome() {
             });
 
             if (bookingResponse.status === StatusCodes.CREATED) {
-                console.log("inside booking if");
                 dispatch(updateBookingInfo({
                     ...bookingInfo,
                     showBookingInitiatedAlert: true
@@ -135,13 +139,45 @@ function PassengerHome() {
     };
 
 
+    useEffect(() => {
 
+        const socket = new SockJS(ServerConfig.SOCKET_SERVICE_URI);
+        const stomp = Stomp.over(socket);
+
+        stomp.connect({}, () => {
+            console.log("Connected to the WebSocket server");
+
+            const passengerData = JSON.parse(localStorage.getItem(Enums.USER_TYPE.PASSENGER));
+            console.log("passengerData :: ", passengerData);
+
+            stomp.subscribe(`/topic/sendRideRequestAcceptanceToPassenger/${passengerData.userId}`, (rideAcceptanceResponse) => {
+
+                rideAcceptanceResponse = JSON.parse(rideAcceptanceResponse.body);
+
+                dispatch(updateBookingInfo({
+                    ...bookingInfo,
+                    bookingId: rideAcceptanceResponse.bookingId,
+                    passengerId: rideAcceptanceResponse.passengerId,
+                    driverId: rideAcceptanceResponse.driverId,
+                    showRideAcceptanceAlert: true
+                }));
+            });
+        });
+
+        setStompClient(stomp);
+
+        return () => {
+            if (stompClient) stompClient.disconnect();
+        };
+
+    }, []);
 
 
     return (
         <div>
 
             {bookingInfo.showBookingInitiatedAlert && (<BookingIntiatedAlert />)}
+            {bookingInfo.showRideAcceptanceAlert && (<BookingAcceptanceAlert />)}
 
 
             <h1 className="font-bold text-2xl m-5">Book Ride</h1>
