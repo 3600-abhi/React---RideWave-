@@ -15,6 +15,7 @@ import { BookingApi } from "../apis";
 import { Loader } from "../component";
 import { ServerConfig } from "../config";
 import { updateBookingInfo } from "../store/slice/booking-slice";
+import { DriverNearByDriversOnMap } from "../component";
 
 
 
@@ -34,6 +35,12 @@ function DriverHome() {
     const [rideInfo, setRideInfo] = useState({});
     const [open, setOpen] = useState(false);
     const [showLoader, setShowLoader] = useState(false);
+
+    const [driverCoord, setDriverCoord] = useState({
+        latitude: "",
+        longitude: ""
+    });
+
 
 
     useEffect(() => {
@@ -84,8 +91,6 @@ function DriverHome() {
             bookingId: bookingInfoJson.bookingId
         };
 
-        console.log("obj :: ", obj);
-
         stompClient.send("/app/rideResponse", {}, JSON.stringify(obj));
     };
 
@@ -96,7 +101,10 @@ function DriverHome() {
 
             {showLoader && (<Loader />)}
 
-            <h1>Welcome to Driver Home Page</h1>
+            <h1>Wait for Ride Request ...</h1>
+
+            <DriverNearByDriversOnMap />
+
 
             <Dialog
                 open={open}
