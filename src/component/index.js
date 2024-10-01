@@ -9,6 +9,7 @@ import PassengerDriverMap from "./PassengerDriverMap";
 import BookingIntiatedAlert from "./BookingIntiatedAlert";
 import BookingAcceptanceAlert from "./BookingAcceptanceAlert";
 import DriverNearByDriversOnMap from "./DriverNearbyDriversOnMap";
+import PassengerNearByDriversOnMap from "./PassengerNearByDriversOnMap";
 
 export {
     PassengerSignIn,
@@ -21,5 +22,6 @@ export {
     PassengerDriverMap,
     BookingIntiatedAlert,
     BookingAcceptanceAlert,
-    DriverNearByDriversOnMap
+    DriverNearByDriversOnMap,
+    PassengerNearByDriversOnMap
 };

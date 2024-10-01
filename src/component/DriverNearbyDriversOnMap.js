@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import axios from 'axios';
 import { ServerConfig } from '../config';
 import carImg from "../asset/carImg.png";
 import myCarImg from "../asset/myCarImg.png";
@@ -7,6 +6,7 @@ import { LocationApi } from "../apis";
 import { useSelector } from 'react-redux';
 
 function DriverNearByDriversOnMap() {
+
     const userInfo = useSelector(store => store.user.userInfo);
 
     const mapRef = useRef(null);
@@ -22,30 +22,37 @@ function DriverNearByDriversOnMap() {
 
 
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const latitude = position.coords.latitude;
-                const longitude = position.coords.longitude;
+        // setInterval(() => {
 
-                console.log("latitude :: ", latitude);
-                console.log("longitude :: ", longitude);
+            console.log("Retrieving latitude & longitude");
 
-                setDriverCoord({
-                    latitude: latitude,
-                    longitude: longitude
-                });
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const latitude = position.coords.latitude;
+                    const longitude = position.coords.longitude;
 
-                LocationApi.getNearByDriverList({ latitude, longitude })
-                    .then(response => {
-                        const nearbyOtherDriverList = response.data.filter(driver => (driver.driverId !== userInfo.userId));
-                        console.log("nearbyOtherDriverList :: ", nearbyOtherDriverList);
-                        setNearbyDriversList(nearbyOtherDriverList);
-                    });
-            },
-            (error) => {
-                console.error(error);
-            }
-        );
+                    console.log("latitude :: ", latitude);
+                    console.log("longitude :: ", longitude);
+
+                    if (latitude != driverCoord.latitude || longitude != driverCoord.longitude) {
+                        setDriverCoord({
+                            latitude: latitude,
+                            longitude: longitude
+                        });
+
+                        LocationApi.getNearByDriverList({ latitude, longitude })
+                            .then(response => {
+                                const nearbyOtherDriverList = response.data.filter(driver => (driver.driverId !== userInfo.userId));
+                                console.log("nearbyOtherDriverList :: ", nearbyOtherDriverList);
+                                setNearbyDriversList(nearbyOtherDriverList);
+                            });
+                    }
+                },
+                (error) => {
+                    console.error(error);
+                }
+            );
+        // }, 500000000);
     }, [userInfo.userId]);
 
 

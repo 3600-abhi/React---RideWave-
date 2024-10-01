@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Autocomplete, TextField, Button } from "@mui/material";
 import { useState, useEffect } from "react";
 import { LocationApi, BookingApi } from "../apis";
-import { BookingAcceptanceAlert, BookingIntiatedAlert, PassengerDriverMap } from "../component";
+import { BookingAcceptanceAlert, BookingIntiatedAlert, PassengerDriverMap, PassengerNearByDriversOnMap } from "../component";
 import { Enums } from "../utils";
 import { updateUserInfo } from "../store/slice/user-slice";
 import { updateBookingInfo } from "../store/slice/booking-slice";
@@ -20,6 +20,8 @@ function PassengerHome() {
     const userInfo = useSelector(store => store.user.userInfo);
     const bookingInfo = useSelector(store => store.booking.bookingInfo);
     const [stompClient, setStompClient] = useState(null);
+
+    const [activeBooking, setActiveBooking] = useState(true);
 
 
     const [fromLocation, setFromLocation] = useState({
@@ -52,7 +54,8 @@ function PassengerHome() {
 
 
 
-    // for getting passenger latitude and longitude to give better auto suggestion
+
+
     useEffect(() => {
 
         navigator.geolocation.getCurrentPosition(
@@ -260,7 +263,11 @@ function PassengerHome() {
                 </div>
 
                 <div className="w-full">
-                    <PassengerDriverMap />
+
+                    {
+                        activeBooking ? <PassengerNearByDriversOnMap /> : <PassengerDriverMap />
+                    }
+
                 </div>
 
             </div>

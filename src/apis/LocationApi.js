@@ -36,13 +36,6 @@ async function getNearByDriverList(data) {
 
         const response = await axios.post(ServerConfig.LOCATION_SERVICE_URI + "/api/v1/location/getNearbyDrivers", nearbyDriverRequest);
 
-        console.log("getNearbyDriverListResponse :: ", response.data);
-
-        //excluding the coordinate of itself....
-        const nearByDriversResponseList = response.data.filter(location => !(location.latitude === data.latitude && location.longitude === data.longitude));
-
-        response.data = nearByDriversResponseList;
-
         return response;
     } catch (error) {
         throw error;
